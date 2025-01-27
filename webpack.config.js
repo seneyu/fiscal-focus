@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   entry: './client/src/index.jsx',
   module: {
     rules: [
@@ -15,6 +16,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
           },
         },
       },
@@ -26,8 +28,15 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './client/public'),
     filename: 'bundle.js',
+    publicPath: '/',
   },
   devServer: {
     static: path.resolve(__dirname, './client/public'),
+    historyApiFallback: true,
+    open: true, // automatically open browser
+    port: 8080,
+    compress: true,
+    hot: true,
   },
+  devtool: 'source-map', // helps with debugging
 };
