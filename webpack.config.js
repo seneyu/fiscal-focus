@@ -37,6 +37,13 @@ module.exports = {
     port: 8080,
     compress: true,
     hot: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:3000/',
+        changeOrigin: true,
+      },
+    ],
   },
   devtool: 'source-map', // helps with debugging
 };
