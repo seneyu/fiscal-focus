@@ -4,9 +4,10 @@
   "description": "",
   "main": "./client/src/index.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development",
-    "start": "concurrently \"webpack-dev-server --mode development\" \"cd server && nodemon server.js\"",
-    "build": "webpack --mode production"
+    "dev": "webpack-dev-server --env NODE_ENV=development",
+    "server": "cd server && nodemon server.js",
+    "start": "concurrently \"npm run dev\" \"npm run server\"",
+    "build": "webpack --env NODE_ENV=production"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.48.1",
