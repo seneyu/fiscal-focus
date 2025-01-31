@@ -1,26 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import supabase from '../../supabase';
 
 const Login = () => {
-  const handleLogin = async () => {
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: 'example' }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: userPassword,
       });
 
-      const data = await response.json();
-      console.log(data.message);
+      if (error) {
+        setError(error.message);
+      } else {
+        console.log('User: ', data.user.user_metadata.email);
+        console.log('Login successfully!');
+        navigate('/dashboard');
+      }
     } catch (err) {
-      console.log('error: ', err);
+      console.error('An unexpected error occurred: ', err);
+      setError(err.message || 'An unexpected error occurred');
     }
   };
 
   return (
     <div>
-      <button onClick={handleLogin}>Login</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="login-email">
+          Email:
+          <input
+            type="email"
+            id="login-email"
+            name="login-email"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+            required
+          />
+        </label>
+        <label htmlFor="login-password">
+          Password:
+          <input
+            type="password"
+            id="login-password"
+            name="login-password"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
+            required
+          />
+        </label>
+        <button type="submit">Log In</button>
+      </form>
     </div>
   );
 };

@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import AuthProvider from './hooks/AuthProvider';
+import PrivateRoute from './hooks/PrivateRoute';
 
 const Layout = () => {
   return (
@@ -35,7 +37,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/dashboard',
-        element: <Dashboard />,
+        element: (
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        ),
       },
       {
         path: '*',
@@ -46,7 +52,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 };
 
 export default App;

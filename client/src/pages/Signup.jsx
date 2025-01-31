@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://dwsjlosdrdjuayqrbjeu.supabase.co';
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import supabase from '../../supabase';
 
 const Signup = () => {
   const [userEmail, setUserEmail] = useState('');
@@ -35,19 +31,23 @@ const Signup = () => {
     <div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
-        <label>
+        <label htmlFor="signup-email">
           Email:
           <input
             type="email"
+            id="signup-email"
+            name="signup-email"
             value={userEmail}
             onChange={(e) => setUserEmail(e.target.value)}
             required
           />
         </label>
-        <label>
+        <label htmlFor="signup-password">
           Password:
           <input
             type="password"
+            id="signup-password"
+            name="signup-password"
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
             required
