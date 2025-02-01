@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import supabase from '../../supabase';
+import { Container, Box, TextField, Button, Alert } from '@mui/material';
 
 const Signup = () => {
   const [userEmail, setUserEmail] = useState('');
@@ -28,34 +29,62 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="signup-email">
-          Email:
-          <input
-            type="email"
-            id="signup-email"
-            name="signup-email"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            required
-          />
-        </label>
-        <label htmlFor="signup-password">
-          Password:
-          <input
-            type="password"
-            id="signup-password"
-            name="signup-password"
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
+    <Container>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        // sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2,
+          width: '100%',
+          mt: 4,
+        }}
+        noValidate
+        autoComplete="off">
+        <TextField
+          required
+          sx={{ width: '15rem' }}
+          id="outlined-email-input"
+          label="Email"
+          type="email"
+          autoComplete="current-email"
+          variant="standard"
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}></TextField>
+
+        <TextField
+          required
+          sx={{ width: '15rem' }}
+          id="outlined-password-input"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          variant="standard"
+          value={userPassword}
+          onChange={(e) => setUserPassword(e.target.value)}></TextField>
+
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            mt: 2,
+            width: '15rem',
+            backgroundColor: 'secondary.light',
+            color: 'black',
+          }}>
+          Sign Up
+        </Button>
+
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
+      </Box>
+    </Container>
   );
 };
 

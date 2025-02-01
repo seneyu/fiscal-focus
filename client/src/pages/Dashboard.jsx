@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../../supabase';
+import { Button, Typography } from '@mui/material';
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
@@ -19,9 +20,17 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div>Welcome to Dashboard!</div>
-      <button onClick={handleLogOut}>Log Out</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <Typography variant="h1">Welcome Back!</Typography>
+      <Button
+        onClick={handleLogOut}
+        sx={{ backgroundColor: 'secondary.light', color: 'black' }}>
+        Log Out
+      </Button>
+      {error && (
+        <Typography variant="subtitle2" sx={{ color: 'danger.main' }}>
+          {error}
+        </Typography>
+      )}
     </div>
   );
 };

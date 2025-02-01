@@ -6,8 +6,12 @@
 }
 
 body {
-  background-color: #f3eae3;
+  background-color: #f7f2ee;
   font-family: 'Geist', sans-serif;
+}
+
+.button {
+  border-radius: 45px;
 }
 
 /* primary: #3c8a68 */
