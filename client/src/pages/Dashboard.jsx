@@ -18,12 +18,26 @@ const Dashboard = () => {
     }
   };
 
+  const handleNewExpense = () => {
+    navigate('/entryform');
+  };
+
   return (
     <div>
       <Typography variant="h1">Welcome Back!</Typography>
       <Button
+        variant="contained"
+        onClick={handleNewExpense}
+        sx={{ width: '10rem' }}>
+        Add Entry
+      </Button>
+      <Button
         onClick={handleLogOut}
-        sx={{ backgroundColor: 'secondary.light', color: 'black' }}>
+        variant="contained"
+        xs={{
+          width: { xs: '100%', sm: 'auto' },
+          fontSize: { xs: '0.8rem', sm: '1rem' },
+        }}>
         Log Out
       </Button>
       {error && (

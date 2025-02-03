@@ -1,4 +1,4 @@
-import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material';
 
 let theme = createTheme({
   palette: {
@@ -7,6 +7,7 @@ let theme = createTheme({
     },
     secondary: {
       main: '#B6E2D3',
+      light: '#D8EEE6',
     },
     tertiary: {
       main: '#D8A7B1',
@@ -39,6 +40,13 @@ let theme = createTheme({
         root: {
           borderRadius: 5,
           width: '100px',
+        },
+        contained: {
+          backgroundColor: '#B6E2D3',
+          color: 'black',
+          '&:hover': {
+            backgroundColor: 'rgb(189, 238, 220)',
+          },
         },
       },
     },

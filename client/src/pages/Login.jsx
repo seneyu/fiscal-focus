@@ -56,7 +56,8 @@ const Login = () => {
           autoComplete="current-email"
           variant="standard"
           value={userEmail}
-          onChange={(e) => setUserEmail(e.target.value)}></TextField>
+          onChange={(e) => setUserEmail(e.target.value)}
+        />
 
         <TextField
           required
@@ -67,18 +68,14 @@ const Login = () => {
           autoComplete="current-password"
           variant="standard"
           value={userPassword}
-          onChange={(e) => setUserPassword(e.target.value)}></TextField>
+          onChange={(e) => setUserPassword(e.target.value)}
+        />
 
         <Button
           type="submit"
           variant="contained"
           fullWidth
-          sx={{
-            mt: 2,
-            width: '15rem',
-            backgroundColor: 'secondary.light',
-            color: 'black',
-          }}>
+          sx={{ mt: 2, width: '15rem' }}>
           Log In
         </Button>
 

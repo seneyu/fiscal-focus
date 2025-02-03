@@ -1,31 +1,31 @@
-const express = require('express');
-const db = require('./model/model');
-require('dotenv').config();
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import http from 'http';
+import { typeDefs, resolvers } from './schema.js';
+import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const httpServer = http.createServer(app);
 
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.status(200);
-  res.send('Hello from the Server!');
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-app.post('/api/login', (req, res) => {
-  res.status(200).json({ message: 'Login route connected!' });
-});
+await server.start();
 
-const connectDatabse = async () => {
-  try {
-    await db.query('SELECT NOW()');
-    console.log('Database connected successfully');
-  } catch (error) {
-    console.error('Error connecting to the database: ', error);
-  }
-};
+app.use(
+  '/graphql',
+  cors({
+    origin: ['http://localhost:4000', 'https://studio.apollographql.com'],
+    credentials: true, // allows server to acccept credentials from cross-origin requests
+  }),
+  express.json(),
+  expressMiddleware(server)
+);
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on http://localhost:${PORT}...`);
-  connectDatabse();
-});
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+console.log(`Server ready at http://localhost:4000/graphql`);

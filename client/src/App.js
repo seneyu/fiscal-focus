@@ -1,13 +1,14 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import NotFound from './pages/NotFound';
-import AuthProvider from './hooks/AuthProvider';
-import PrivateRoute from './hooks/PrivateRoute';
+import Navbar from './components/Navbar.jsx';
+import Home from './pages/Home.jsx';
+import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import EntryForm from './pages/EntryForm.jsx';
+import NotFound from './pages/NotFound.jsx';
+import AuthProvider from './hooks/AuthProvider.js';
+import PrivateRoute from './hooks/PrivateRoute.js';
 
 const Layout = () => {
   return (
@@ -40,6 +41,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: '/entryform',
+        element: (
+          <PrivateRoute>
+            <EntryForm />
           </PrivateRoute>
         ),
       },

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
+import { useAuth } from './AuthProvider.js';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
