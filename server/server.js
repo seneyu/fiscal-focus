@@ -3,7 +3,8 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express from 'express';
 import http from 'http';
-import { typeDefs, resolvers } from './schema.js';
+import { typeDefs } from './src/schema/typeDefs.js';
+import resolvers from './src/schema/resolvers.js';
 import cors from 'cors';
 
 const app = express();
@@ -20,7 +21,11 @@ await server.start();
 app.use(
   '/graphql',
   cors({
-    origin: ['http://localhost:4000', 'https://studio.apollographql.com'],
+    origin: [
+      'http://localhost:4000',
+      'https://studio.apollographql.com',
+      'http://localhost:8080',
+    ],
     credentials: true, // allows server to acccept credentials from cross-origin requests
   }),
   express.json(),

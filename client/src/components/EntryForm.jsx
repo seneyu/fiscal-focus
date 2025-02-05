@@ -14,7 +14,11 @@ import {
   Container,
 } from '@mui/material';
 
+import { useMutation } from '@apollo/client';
+import { CREATE_EXPENSE } from '../apollo/mutations.js';
+
 const EntryForm = ({ currencySymbol = '$' }) => {
+  const [createExpense] = useMutation(CREATE_EXPENSE);
   const [date, setDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -24,10 +28,35 @@ const EntryForm = ({ currencySymbol = '$' }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError(null);
     console.log(date, category, title, amount);
+
+    const cleanAmount = amount.replace(/[^0-9.-]+/g, '');
+    const parsedAmount = parseFloat(cleanAmount);
+
+    try {
+      const { data } = await createExpense({
+        variables: {
+          date,
+          amount: parsedAmount,
+          category,
+          title,
+        },
+      });
+
+      console.log('New expense created: ', data.createExpense);
+
+      // reset form
+      setDate(new Date().toISOString().split('T')[0]);
+      setCategory('');
+      setTitle('');
+      setAmount('');
+    } catch (err) {
+      console.error('Submission failed: ', err);
+      setError(err.message || 'Failed to create expense. Please try again.');
+    }
   };
 
   return (
@@ -49,33 +78,6 @@ const EntryForm = ({ currencySymbol = '$' }) => {
             onChange={(e) => setDate(e.target.value)}
           />
 
-          <NumericFormat
-            customInput={TextField}
-            sx={{ width: '15rem' }}
-            label="Amount"
-            variant="standard"
-            thousandSeparator={true}
-            fixedDecimalScale={true}
-            value={amount}
-            decimalScale={2}
-            autoComplete="off"
-            defaultValue="0.00"
-            onChange={(e) => setAmount(e.target.value)}
-            onValueChange={(values) => setAmount(values.value)}
-            prefix={currencySymbol}
-          />
-
-          <TextField
-            sx={{ width: '15rem' }}
-            id="entry-title"
-            label="Title"
-            type="text"
-            variant="standard"
-            autoComplete="off"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
           <FormControl sx={{ width: '15rem' }}>
             <InputLabel id="category">Category</InputLabel>
             <Select
@@ -92,6 +94,37 @@ const EntryForm = ({ currencySymbol = '$' }) => {
               <MenuItem value="rent">Rent</MenuItem>
             </Select>
           </FormControl>
+
+          <TextField
+            sx={{ width: '15rem' }}
+            id="entry-title"
+            label="Title"
+            type="text"
+            variant="standard"
+            autoComplete="off"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          <NumericFormat
+            customInput={TextField}
+            sx={{ width: '15rem' }}
+            label="Amount"
+            variant="standard"
+            thousandSeparator={true}
+            fixedDecimalScale={true}
+            value={amount}
+            decimalScale={2}
+            autoComplete="off"
+            defaultValue="0.00"
+            onChange={(e) => setAmount(e.target.value)}
+            onValueChange={(values) => setAmount(values.value)}
+            isAllowed={(values) => {
+              const { floatValue } = values;
+              return floatValue >= 0;
+            }}
+            prefix={currencySymbol}
+          />
 
           <Button
             type="submit"

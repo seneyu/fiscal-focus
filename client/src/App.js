@@ -1,14 +1,14 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
-import Home from './pages/Home.jsx';
-import Login from './pages/Login.jsx';
-import Signup from './pages/Signup.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import EntryForm from './pages/EntryForm.jsx';
-import NotFound from './pages/NotFound.jsx';
+import Home from './components/Home.jsx';
+import Login from './components/Login.jsx';
+import Signup from './components/Signup.jsx';
+import Dashboard from './components/Dashboard.jsx';
+import EntryForm from './components/EntryForm.jsx';
+import NotFound from './components/NotFound.jsx';
 import AuthProvider from './hooks/AuthProvider.js';
 import PrivateRoute from './hooks/PrivateRoute.js';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 
 const Layout = () => {
   return (
