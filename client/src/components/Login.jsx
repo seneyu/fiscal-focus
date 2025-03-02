@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../../supabase';
+import supabase from '../config/supabase';
 import { Box, TextField, Button, Alert, Container } from '@mui/material';
 
 const Login = () => {
