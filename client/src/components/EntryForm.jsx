@@ -42,12 +42,12 @@ const EntryForm = ({ currencySymbol = '$' }) => {
   const [success, setSuccess] = useState(false);
 
   const categoryOptions = [
-    { value: 'homeUtilities', label: 'Home & Utilities' },
+    { value: 'rent', label: 'Rent' },
+    { value: 'home', label: 'Home' },
+    { value: 'utilities', label: 'Utilities' },
     { value: 'travel', label: 'Travel' },
     { value: 'groceries', label: 'Groceries' },
     { value: 'social', label: 'Social' },
-    { value: 'rent', label: 'Rent' },
-    { value: 'entertainment', label: 'Entertainment' },
     { value: 'dining', label: 'Dining' },
     { value: 'shopping', label: 'Shopping' },
     { value: 'healthcare', label: 'Healthcare' },
