@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
+import supabase from '../config/supabase';
 import {
   Typography,
   Box,
@@ -17,14 +18,27 @@ import {
   Autocomplete,
 } from '@mui/material';
 
-const EntryForm = ({ currencySymbol = '$' }) => {
-  const location = useLocation();
-  const { user } = location.state || {};
+const EntryForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!user) navigate('/login');
-  }, [user, navigate]);
+    const checkUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        navigate('/login');
+        return;
+      }
+
+      setUser(user);
+    };
+
+    checkUser();
+  }, [navigate]);
 
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -97,6 +111,12 @@ const EntryForm = ({ currencySymbol = '$' }) => {
     setLoading(true);
     setSuccess(false);
 
+    if (!user) {
+      setError('User not authenticated');
+      setLoading(false);
+      return;
+    }
+
     const cleanAmount = amount.replace(/[^0-9.-]+/g, '');
     const parsedAmount = parseFloat(cleanAmount);
 
@@ -126,6 +146,7 @@ const EntryForm = ({ currencySymbol = '$' }) => {
       }
 
       console.log('New expense created: ', data);
+      onExpenseAdded(data);
       setSuccess(true);
       resetForm();
     } catch (err) {
@@ -136,15 +157,19 @@ const EntryForm = ({ currencySymbol = '$' }) => {
     }
   };
 
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
+
   return (
     <Container>
-      <Typography variant="h3">Entry Form</Typography>
+      {/* <Typography variant="h3">Entry Form</Typography> */}
       <Typography variant="subtitle">
         Pleasse fill out the details of your expense:
       </Typography>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 8 }}>
-        <Stack spacing={4} alignItems="center">
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 6 }}>
+        <Stack spacing={2} alignItems="center">
           <TextField
             sx={{ width: '15rem' }}
             id="entry-date"
@@ -153,7 +178,6 @@ const EntryForm = ({ currencySymbol = '$' }) => {
             variant="standard"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
           />
 
           <FormControl sx={{ width: '15rem' }}>
@@ -225,6 +249,7 @@ const EntryForm = ({ currencySymbol = '$' }) => {
               id="entry-payment-method"
               value={paymentMethod}
               label="Payment Method"
+              variant="standard"
               onChange={(e) => setPaymentMethod(e.target.value)}>
               {paymentOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -235,6 +260,7 @@ const EntryForm = ({ currencySymbol = '$' }) => {
           </FormControl>
 
           <Autocomplete
+            sx={{ width: '15rem' }}
             multiple
             id="entry-tags"
             options={tagOptions}
@@ -256,10 +282,10 @@ const EntryForm = ({ currencySymbol = '$' }) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                variant="outlined"
+                variant="standard"
                 label="Tags"
-                placeholder="Add tags"
-                helperText="Press enter after each tag"
+                // placeholder="Add tags"
+                // helperText="Press enter after each tag"
               />
             )}
           />
