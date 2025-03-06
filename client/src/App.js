@@ -4,7 +4,7 @@ import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import Dashboard from './components/Dashboard.jsx';
-import EntryForm from './components/EntryForm.jsx';
+import EntryForm from './components/ExpenseOverviewForm.jsx';
 import NotFound from './components/NotFound.jsx';
 import AuthProvider from './hooks/AuthProvider.js';
 import PrivateRoute from './hooks/PrivateRoute.js';

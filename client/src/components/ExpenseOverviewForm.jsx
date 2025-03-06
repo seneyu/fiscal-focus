@@ -17,8 +17,13 @@ import {
   Chip,
   Autocomplete,
 } from '@mui/material';
+import {
+  categoryOptions,
+  paymentOptions,
+  tagOptions,
+} from '../utils/optionsData';
 
-const EntryForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
+const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -54,46 +59,6 @@ const EntryForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const categoryOptions = [
-    { value: 'rent', label: 'Rent' },
-    { value: 'home', label: 'Home' },
-    { value: 'utilities', label: 'Utilities' },
-    { value: 'travel', label: 'Travel' },
-    { value: 'groceries', label: 'Groceries' },
-    { value: 'social', label: 'Social' },
-    { value: 'dining', label: 'Dining' },
-    { value: 'shopping', label: 'Shopping' },
-    { value: 'healthcare', label: 'Healthcare' },
-    { value: 'education', label: 'Education' },
-    { value: 'gifts', label: 'Gifts' },
-    { value: 'subscriptions', label: 'Subscriptions' },
-    { value: 'other', label: 'Other' },
-  ];
-
-  const paymentOptions = [
-    { value: 'cash', label: 'Cash' },
-    { value: 'credit', label: 'Credit Card' },
-    { value: 'debit', label: 'Debit Card' },
-    { value: 'bankTransfer', label: 'Bank Transfer' },
-    { value: 'mobilePay', label: 'Mobile Payment' },
-    { value: 'other', label: 'Other' },
-  ];
-
-  const tagOptions = [
-    'essential',
-    'discretionary',
-    'recurring',
-    'one-time',
-    'work',
-    'personal',
-    'family',
-    'emergency',
-    'planned',
-    'unplanned',
-    'sale',
-    'gift',
-  ];
 
   const resetForm = () => {
     setDate(new Date().toISOString().split('T')[0]);
@@ -315,4 +280,4 @@ const EntryForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   );
 };
 
-export default EntryForm;
+export default ExpenseOverviewForm;

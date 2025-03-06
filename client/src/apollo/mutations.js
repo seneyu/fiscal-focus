@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const CREATE_EXPENSE = gql`
+export const EXPENSE_QUERY = gql`
   mutation CreateExpense(
     $date: String!
     $amount: Float!

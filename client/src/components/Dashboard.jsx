@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
 import { Container } from '@mui/material';
-import DashboardMenu from './DahsboardMenu';
+import ExpenseOverview from './ExpenseOverview';
+import ExpenseOverviewChart from './ExpenseOverviewChart';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -79,7 +80,7 @@ const Dashboard = () => {
     <Container
       sx={{ display: 'flex', justifyContent: 'center' }}
       alignitems="center">
-      <DashboardMenu
+      <ExpenseOverview
         d3Container={d3Container}
         onExpenseAdded={addNewExpense}
         expenses={expenses}

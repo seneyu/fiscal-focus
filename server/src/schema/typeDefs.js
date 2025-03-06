@@ -1,16 +1,6 @@
 export const typeDefs = `#graphql
     type Query {
-      getExpenses: [Expense!]!
-      getExpenseById(id: ID!): Expense
-    }
-    
-    type Mutation {
-      createExpense(
-        date: String!
-        amount: Float!
-        category: String!
-        title: String!
-      ): Expense
+      filterExpenses(category: String, payment_method: String, tags: [String]): [Expense!]!
     }
   
     type Expense {
@@ -19,6 +9,10 @@ export const typeDefs = `#graphql
       amount: Float!
       category: String!
       title: String!
+      description: String
+      payment_method: String
+      tags: [String]
       created_at: String
+      user_id: String
     }
   `;
