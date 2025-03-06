@@ -25,15 +25,14 @@ const ExpenseOverview = ({ expenses, loading }) => {
 
       const pie = d3.pie().value((d) => d.amount);
       const pieData = pie(data);
-      console.log(pie(data));
       pieData.sort((a, b) => b.data.amount - a.data.amount);
       const total = d3.sum(data, (d) => d.amount);
       pieData.forEach((d) => {
         d.percentage = (d.data.amount / total) * 100;
       });
 
-      const width = 700;
-      const height = 600;
+      const width = 650;
+      const height = 550;
       const margin = 120;
       const radius = Math.min(width, height) / 2 - margin;
 
