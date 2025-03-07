@@ -24,3 +24,19 @@ export const FILTER_EXPENSES = gql`
     }
   }
 `;
+
+export const GET_EXPENSES = gql`
+  query GetExpenses($userId: String!) {
+    expenses(user_id: $userId) {
+      id
+      date
+      amount
+      category
+      title
+      description
+      payment_method
+      tags
+      user_id
+    }
+  }
+`;

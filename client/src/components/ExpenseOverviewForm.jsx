@@ -22,10 +22,13 @@ import {
   paymentOptions,
   tagOptions,
 } from '../utils/optionsData';
+import { useMutation } from '@apollo/client';
+import { EXPENSE_ADDED } from '../apollo/mutations';
 
-const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
+const ExpenseOverviewForm = ({ currencySymbol = '$' }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [addExpense, { loading: mutationLoading }] = useMutation(EXPENSE_ADDED);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -87,31 +90,22 @@ const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
 
     try {
       console.log('User: ', user);
-      const response = await fetch('/api/expenses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+
+      const { data } = await addExpense({
+        variables: {
           date,
           amount: parsedAmount,
           category,
           title,
           description,
           payment_method: paymentMethod,
-          tags: tags,
+          tags,
           user_id: user.id,
-        }),
+        },
       });
 
-      const data = await response.json();
+      console.log('New expense created: ', data.addExpense);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create expense');
-      }
-
-      console.log('New expense created: ', data);
-      onExpenseAdded(data);
       setSuccess(true);
       resetForm();
     } catch (err) {

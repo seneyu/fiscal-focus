@@ -39,7 +39,11 @@ const a11yProps = (index) => {
   };
 };
 
-const ExpenseOverview = ({ onExpenseAdded, expenses, loading }) => {
+const ExpenseOverview = ({
+  onExpenseAdded = () => {},
+  expenses = [],
+  loading,
+}) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {

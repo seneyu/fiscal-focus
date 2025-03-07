@@ -7,9 +7,14 @@ import { typeDefs } from './src/schema/typeDefs.js';
 import resolvers from './src/schema/resolvers.js';
 import cors from 'cors';
 import expenseController from './src/controllers/expenseController.js';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
 const app = express();
 const httpServer = http.createServer(app);
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 // configure middleware for rest api
 app.use(express.json());
@@ -26,27 +31,40 @@ app.use(
   })
 );
 
-app.post('/api/expenses', expenseController.createExpense, (_req, res) => {
-  res.status(201).json(res.locals.expense);
+// app.post('/api/expenses', expenseController.createExpense, (_req, res) => {
+//   res.status(201).json(res.locals.expense);
+// });
+
+// websocket server for subscriptions
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
 });
 
-// app.get('/api/expenses', (req, res) => {
-//   res.status(200);
-// });
-
-// app.get('api/expenses/:id', (req, res) => {
-//   res.status(200);
-// });
+// hand in the schema to webscoket server
+const serverCleanup = useServer({ schema }, wsServer);
 
 // configure graphql server
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  schema,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    // proper shutdown for the websocket server
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
 });
 
 await server.start();
 
+// apply graphQL middleware
 app.use(
   '/graphql',
   cors({
@@ -64,3 +82,4 @@ app.use(
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 console.log(`REST API ready at http://localhost:4000/api`);
 console.log(`Server ready at http://localhost:4000/graphql`);
+console.log(`Subscriptions ready at ws://localhost:4000/graphql`);

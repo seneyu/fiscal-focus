@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-
-import { Button, Typography, Container, Box } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Typography, Box } from '@mui/material';
 import * as d3 from 'd3';
 
 const ExpenseOverviewChart = ({ expenses, loading }) => {
   const d3Container = useRef(null);
+  const [chartData, setChartData] = useState([]);
 
-  // load d3 visualization expenses object is retrieved
+  // process expense data whenever it changes
   useEffect(() => {
-    if (expenses.length > 0 && d3Container.current) {
-      // clear any existing svg before drawing a new one
-      d3.select(d3Container.current).selectAll('*').remove();
-
+    if (!loading && expenses && expenses.length > 0) {
       const expensesByCategory = d3.rollup(
         expenses,
         (v) => d3.sum(v, (d) => d.amount),
@@ -23,10 +20,26 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         amount,
       }));
 
+      setChartData(data);
+    } else {
+      setChartData([]);
+    }
+  }, [expenses, loading]);
+
+  // load d3 visualization expenses object is retrieved
+  useEffect(() => {
+    if (expenses.length > 0 && d3Container.current) {
+      console.log('Updating chart with data:', chartData);
+
+      // clear any existing svg before drawing a new one
+      d3.select(d3Container.current).selectAll('*').remove();
+
       const pie = d3.pie().value((d) => d.amount);
-      const pieData = pie(data);
+      const pieData = pie(chartData);
+
       pieData.sort((a, b) => b.data.amount - a.data.amount);
-      const total = d3.sum(data, (d) => d.amount);
+
+      const total = d3.sum(chartData, (d) => d.amount);
       pieData.forEach((d) => {
         d.percentage = (d.data.amount / total) * 100;
       });
@@ -102,7 +115,7 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
           return d.percentage > 5 ? `$${d.data.amount.toFixed(2)}` : '';
         });
 
-      // separate larger and smaller slices foro different label treatments
+      // separate larger and smaller slices for different label treatments
       const largeSlices = arcs.filter((d) => d.percentage >= 3);
       const smallSlices = arcs.filter((d) => d.percentage < 3);
 
@@ -142,7 +155,6 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         .text((d) => d.data.category);
 
       // add legend
-      const lengendSpacing = 20;
       const legendRectSize = 15;
 
       const legend = svg
@@ -174,7 +186,7 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         )
         .style('font-size', '12px');
     }
-  }, [expenses, loading]);
+  }, [chartData]);
 
   if (loading) {
     return <Typography>Loading expenses...</Typography>;

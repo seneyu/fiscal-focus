@@ -1,104 +1,95 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
-import { Container } from '@mui/material';
+import { Typography, Container } from '@mui/material';
 import ExpenseOverview from './ExpenseOverview';
-import ExpenseOverviewChart from './ExpenseOverviewChart';
+import { GET_EXPENSES } from '../apollo/queries';
+import { EXPENSE_ADDED } from '../apollo/subscriptions';
+import { useQuery, useSubscription } from '@apollo/client';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
   const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const d3Container = useRef(null);
 
   useEffect(() => {
-    const fetchExpenses = async () => {
+    const checkUser = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
         const {
           data: { user },
-          error: userError,
+          error,
         } = await supabase.auth.getUser();
 
-        if (userError) {
-          setError(userError.message);
-          throw new Error(userError.message);
-        }
-
-        if (!user) {
+        if (error) {
+          console.error('Auth error:', error);
           navigate('/login');
           return;
         }
 
-        setUser(user);
-
-        const { data, error } = await supabase
-          .from('expenses')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('date', { ascending: false });
-
-        // console.log('Expenses data:', data);
-
-        if (error) {
-          setError(error.message);
-          console.error('Supabase query error:', error);
-          throw new Error(error.message);
+        if (!user) {
+          console.log('No user found');
+          navigate('/login');
+          return;
         }
 
-        setExpenses(data);
-      } catch (err) {
-        console.error('Error fetching expenses:', err);
-      } finally {
-        setLoading(false);
+        console.log('User authenticated:', user.id);
+        setUser(user);
+      } catch (error) {
+        console.error('Error checking user: ', error);
+        navigate('/login');
       }
     };
 
-    fetchExpenses();
+    checkUser();
   }, [navigate]);
 
-  // const handleLogOut = async () => {
-  //   await supabase.auth.signOut();
+  // query for initial expenses data
+  const {
+    loading,
+    error: queryError,
+    data: queryData,
+  } = useQuery(GET_EXPENSES, {
+    variables: { userId: user?.id },
+    skip: !user?.id,
+    onCompleted: (data) => {
+      console.log('Query completed with data:', data);
+      setExpenses(data.expenses || []);
+    },
+  });
 
-  //   if (error) {
-  //     setError(error.message);
-  //   } else {
-  //     console.log('Log out successfully!');
-  //     navigate('/');
-  //   }
-  // };
+  // subscribe to new expenses
+  const { data: subscriptionData } = useSubscription(EXPENSE_ADDED);
 
-  const addNewExpense = (newExpense) => {
-    setExpenses((prevExpenses) => [newExpense, ...prevExpenses]);
-  };
+  // update expenses when subscription delivers new data
+  useEffect(() => {
+    if (subscriptionData?.onExpenseAdded) {
+      const newExpense = subscriptionData.onExpenseAdded;
+      console.log('Subscription data received:', newExpense);
+
+      if (newExpense.user_id === user?.id) {
+        setExpenses((prevExpenses) => {
+          console.log('Adding new expense to state:', newExpense);
+          const updatedExpenses = [newExpense, ...prevExpenses];
+          console.log('New expenses state:', updatedExpenses);
+          return updatedExpenses;
+        });
+      }
+    }
+  }, [subscriptionData, user]);
+
+  useEffect(() => {
+    console.log('Current expenses state:', expenses);
+  }, [expenses]);
 
   return (
     <Container
       sx={{ display: 'flex', justifyContent: 'center' }}
       alignitems="center">
-      <ExpenseOverview
-        d3Container={d3Container}
-        onExpenseAdded={addNewExpense}
-        expenses={expenses}
-        loading={loading}
-      />
+      <ExpenseOverview expenses={expenses || []} loading={loading} />
 
-      {/* <Box display="flex" justifyContent="center">
-            <Button
-              onClick={handleLogOut}
-              variant="contained"
-              sx={{ width: '8rem' }}>
-              Log Out
-            </Button>
-          </Box> */}
-
-      {error && (
+      {queryError && (
         <Typography variant="subtitle2" sx={{ color: 'danger.main' }}>
-          {error}
+          {queryError.message}
         </Typography>
       )}
     </Container>
