@@ -77,7 +77,8 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         .innerRadius(radius * 1.1)
         .outerRadius(radius * 1.1);
 
-      arcs
+      // add paths (pie slices)
+      const paths = arcs
         .append('path')
         .attr('fill', (d) => {
           return color(d.data.category);
@@ -142,7 +143,6 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         .text((d) => d.data.category);
 
       // add legend
-      const lengendSpacing = 20;
       const legendRectSize = 15;
 
       const legend = svg
@@ -166,13 +166,59 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
         .append('text')
         .attr('x', legendRectSize + 5)
         .attr('y', legendRectSize - 3)
-        .text(
-          (d) =>
-            `${d.data.category}: $${d.data.amount.toFixed(
-              2
-            )} (${d.percentage.toFixed(1)}%)`
-        )
+        .text((d) => {
+          let category =
+            d.data.category[0].toUpperCase() +
+            d.data.category.slice(1, d.data.category.length);
+          return `${category} (${d.percentage.toFixed(1)}%)`;
+        })
         .style('font-size', '12px');
+
+      // define tooltip
+      const tooltip = d3
+        .select(d3Container.current)
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('position', 'absolute')
+        .style('visibility', 'hidden')
+        .style('background-color', 'white')
+        .style('border', '1px solid #ddd')
+        .style('border-radius', '4px')
+        .style('padding', '5px')
+        .style('box-shadow', '0px 0px 6px rgba(0, 0, 0, 0.2)')
+        .style('font-size', '12px');
+
+      // attach mouse event handlers to pie slices
+      paths
+        .on('mouseover', function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr(
+              'd',
+              d3
+                .arc()
+                .innerRadius(0)
+                .outerRadius(radius * 1.08)
+            );
+
+          tooltip.style(
+            'visibility',
+            'visible'
+          ).html(`<strong>${d.data.category}</strong><br>
+            Amount: $${d.data.amount.toFixed(2)}<br>
+            Percentage: ${d.percentage.toFixed(1)}%`);
+        })
+        .on('mousemove', function (event) {
+          tooltip
+            .style('top', event.pageY + 10 + 'px')
+            .style('left', event.pageX + 20 + 'px');
+        })
+        .on('mouseout', function () {
+          d3.select(this).transition().duration(500).attr('d', arc);
+
+          tooltip.style('visibility', 'hidden');
+        });
     }
   }, [expenses, loading]);
 
