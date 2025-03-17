@@ -38,6 +38,11 @@ app.post('/api/expenses', expenseController.createExpense, (_req, res) => {
 //   res.status(200);
 // });
 
+app.delete('/api/expenses/:id', expenseController.deleteExpense, (req, res) => {
+  console.log('delete request received for id: ', req.params.id);
+  res.status(200).json(res.locals.deletedExpense);
+});
+
 // configure graphql server
 const server = new ApolloServer({
   typeDefs,

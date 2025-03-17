@@ -58,4 +58,27 @@ expenseController.createExpense = async (req, res, next) => {
   }
 };
 
+expenseController.deleteExpense = async (req, res, next) => {
+  const { id } = req.params;
+  console.log('delete request received for id: ', id);
+
+  try {
+    const { data, error } = await supabase
+      .from('expenses')
+      .delete()
+      .match({ id });
+
+    if (error) {
+      console.error('Supabase error: ', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.locals.deletedExpense = data;
+    return next();
+  } catch (error) {
+    console.error('Error in deleteExpense: ', error);
+    return next(error);
+  }
+};
+
 export default expenseController;
