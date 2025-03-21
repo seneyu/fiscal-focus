@@ -7,8 +7,13 @@ import {
   TableBody,
   TableCell,
   Paper,
+  Button,
+  Modal,
+  Box,
 } from '@mui/material';
 import { getCategoryLabel, getPaymentMethodLabel } from '../utils/optionsData';
+import supabase from '../config/supabase';
+import EditForm from './editForm';
 
 const ExpenseOverviewTable = ({
   expenses,
@@ -17,6 +22,8 @@ const ExpenseOverviewTable = ({
 }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
   // console.log('expenses: ', expenses);
 
   // update internal state when expenses prop changes
@@ -33,7 +40,32 @@ const ExpenseOverviewTable = ({
     }
   }, [expenses, parentLoading]);
 
-  const handleClick = async (id) => {
+  const handleUpdate = async (id) => {
+    try {
+      console.log('Edit expense entry ID: ', id);
+      // retrieve expense entry info by id
+      const { data, error } = await supabase
+        .from('expenses')
+        .select()
+        .eq('id', id)
+        .single();
+      console.log('Entry data: ', data);
+
+      if (error) throw error;
+
+      setEditingExpense(data);
+      setModalOpen(true);
+    } catch (err) {
+      console.error('Update failed: ', err);
+    }
+  };
+
+  const handleClosesModal = () => {
+    setModalOpen(false);
+    setEditingExpense(null);
+  };
+
+  const handleDelete = async (id) => {
     try {
       const response = await fetch(`/api/expenses/${id}`, {
         method: 'DELETE',
@@ -60,6 +92,11 @@ const ExpenseOverviewTable = ({
     }
   };
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditingExpense(null);
+  };
+
   return (
     <TableContainer component={Paper} sx={{ mt: -5 }}>
       {/* {console.log(expenses)} */}
@@ -72,6 +109,7 @@ const ExpenseOverviewTable = ({
             <TableCell>Amount</TableCell>
             <TableCell>Payment Method</TableCell>
             <TableCell>Description</TableCell>
+            <TableCell></TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableHead>
@@ -106,13 +144,48 @@ const ExpenseOverviewTable = ({
                 </TableCell>
                 <TableCell>{row.description || '--'}</TableCell>
                 <TableCell>
-                  <button onClick={() => handleClick(row.id)}>x</button>
+                  <Button onClick={() => handleUpdate(row.id)}>Edit</Button>
+                </TableCell>
+                <TableCell>
+                  <Button onClick={() => handleDelete(row.id)}>x</Button>
                 </TableCell>
               </TableRow>
             ))
           )}
         </TableBody>
       </Table>
+
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="edit-expense-modal"
+        aria-describedby="modal-to-edit-expense-details">
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 600,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}>
+          <EditForm
+            expense={editingExpense}
+            onClose={handleCloseModal}
+            onUpdate={(updatedExpense) => {
+              setTableData((prevData) =>
+                prevData.map((exp) =>
+                  exp.id === updatedExpense.id ? updatedExpense : exp
+                )
+              );
+              handleClosesModal();
+            }}
+          />
+        </Box>
+      </Modal>
     </TableContainer>
   );
 };

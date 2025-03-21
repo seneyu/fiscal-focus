@@ -81,4 +81,43 @@ expenseController.deleteExpense = async (req, res, next) => {
   }
 };
 
+expenseController.updateExpense = async (req, res, next) => {
+  const { id } = req.params;
+  const { date, amount, category, title, description, payment_method, tags } =
+    req.body;
+  // console.log('update request received for id: ', id);
+  // console.log('request body: ', req.body);
+
+  try {
+    const { data, error } = await supabase
+      .from('expenses')
+      .update({
+        date,
+        amount,
+        category,
+        title,
+        description,
+        payment_method,
+        tags,
+      })
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Supabase error: ', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'Expense not found' });
+    }
+
+    res.locals.updatedExpense = data[0];
+    return next();
+  } catch (error) {
+    console.error('Error in updateExpense: ', error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export default expenseController;

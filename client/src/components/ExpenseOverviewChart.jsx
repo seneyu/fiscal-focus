@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { Button, Typography, Container, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import * as d3 from 'd3';
 
 const ExpenseOverviewChart = ({ expenses, loading }) => {

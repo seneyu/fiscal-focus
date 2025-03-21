@@ -39,8 +39,12 @@ app.post('/api/expenses', expenseController.createExpense, (_req, res) => {
 // });
 
 app.delete('/api/expenses/:id', expenseController.deleteExpense, (req, res) => {
-  console.log('delete request received for id: ', req.params.id);
   res.status(200).json(res.locals.deletedExpense);
+});
+
+app.post('/api/expenses/:id', expenseController.updateExpense, (req, res) => {
+  console.log('update request received for: ', req.body);
+  res.status(200).json(res.locals.updatedExpense);
 });
 
 // configure graphql server
