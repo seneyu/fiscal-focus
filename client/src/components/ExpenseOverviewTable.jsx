@@ -19,6 +19,7 @@ const ExpenseOverviewTable = ({
   expenses,
   loading: parentLoading,
   onExpenseDeleted,
+  onExpenseUpdated,
 }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -182,6 +183,9 @@ const ExpenseOverviewTable = ({
                 )
               );
               handleClosesModal();
+              if (onExpenseUpdated) {
+                onExpenseUpdated(updatedExpense);
+              }
             }}
           />
         </Box>

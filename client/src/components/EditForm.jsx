@@ -58,16 +58,16 @@ const EditForm = ({ expense, onClose, onUpdate }) => {
     console.log('Parsed amount:', parsedAmount);
 
     try {
-      console.log('Attempting to update expense:', expense.id);
-      console.log('Sending data:', {
-        date,
-        amount,
-        category,
-        title,
-        description,
-        payment_method: paymentMethod,
-        tags,
-      });
+      // console.log('Attempting to update expense:', expense.id);
+      // console.log('Sending data:', {
+      //   date,
+      //   amount,
+      //   category,
+      //   title,
+      //   description,
+      //   payment_method: paymentMethod,
+      //   tags,
+      // });
 
       const response = await fetch(`/api/expenses/${expense.id}`, {
         method: 'POST',

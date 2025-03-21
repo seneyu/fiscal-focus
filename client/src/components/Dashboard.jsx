@@ -110,6 +110,14 @@ const Dashboard = () => {
     );
   };
 
+  const onExpenseUpdated = (updatedExpense) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
+  };
+
   return (
     <Container
       sx={{ display: 'flex', justifyContent: 'center' }}
@@ -136,6 +144,7 @@ const Dashboard = () => {
               expenses={expenses}
               loading={loading}
               onExpenseDeleted={onExpenseDeleted}
+              onExpenseUpdated={onExpenseUpdated}
             />
           </Container>
         </CustomTabPanel>
