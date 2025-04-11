@@ -89,17 +89,6 @@ const Dashboard = () => {
     fetchExpenses();
   }, [navigate]);
 
-  // const handleLogOut = async () => {
-  //   await supabase.auth.signOut();
-
-  //   if (error) {
-  //     setError(error.message);
-  //   } else {
-  //     console.log('Log out successfully!');
-  //     navigate('/');
-  //   }
-  // };
-
   const addNewExpense = (newExpense) => {
     setExpenses((prevExpenses) => [newExpense, ...prevExpenses]);
   };
