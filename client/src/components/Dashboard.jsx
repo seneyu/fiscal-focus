@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
 import { Container, Box, Tabs, Tab } from '@mui/material';
-import ExpenseOverviewForm from './ExpenseOverviewForm';
-import ExpenseOverviewChart from './ExpenseOverviewChart';
-import ExpenseOverviewTable from './ExpenseOverviewTable';
+import ExpenseDetailsForm from './ExpenseDetailsForm';
+import ExpenseDetailsChart from './ExpenseDetailsChart';
+import ExpenseDetailsTable from './ExpenseDetailsTable';
 import CustomSummary from './CustomSummary';
 
 const CustomTabPanel = (props) => {
@@ -119,17 +119,17 @@ const Dashboard = () => {
             textColor="primary"
             aria-label="dashboard tabs">
             <Tab label="Expense Overview" {...a11yProps(0)} />
-            <Tab label="Custom Summary" {...a11yProps(1)} />
-            {/* <Tab label="Reports" {...a11yProps(2)} /> */}
+            <Tab label="Expense Details" {...a11yProps(1)} />
+            <Tab label="Custom Summary" {...a11yProps(2)} />
           </Tabs>
         </Box>
-        <CustomTabPanel value={value} index={0}>
+        <CustomTabPanel value={value} index={1}>
           <Container>
             <Box sx={{ display: 'inline-flex', alignitems: 'center' }}>
-              <ExpenseOverviewForm onExpenseAdded={addNewExpense} />
-              <ExpenseOverviewChart expenses={expenses} loading={loading} />
+              <ExpenseDetailsForm onExpenseAdded={addNewExpense} />
+              <ExpenseDetailsChart expenses={expenses} loading={loading} />
             </Box>
-            <ExpenseOverviewTable
+            <ExpenseDetailsTable
               expenses={expenses}
               loading={loading}
               onExpenseDeleted={onExpenseDeleted}
@@ -137,19 +137,10 @@ const Dashboard = () => {
             />
           </Container>
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
+        <CustomTabPanel value={value} index={2}>
           <CustomSummary />
         </CustomTabPanel>
       </Box>
-
-      {/* <Box display="flex" justifyContent="center">
-            <Button
-              onClick={handleLogOut}
-              variant="contained"
-              sx={{ width: '8rem' }}>
-              Log Out
-            </Button>
-          </Box> */}
 
       {error && (
         <Typography variant="subtitle2" sx={{ color: 'danger.main' }}>

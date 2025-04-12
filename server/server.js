@@ -67,7 +67,11 @@ app.use(
     credentials: true, // allows server to acccept credentials from cross-origin requests
   }),
   express.json(),
-  expressMiddleware(server)
+  expressMiddleware(server, {
+    context: async () => ({
+      user: { id: 'b6eb8e7f-969f-46a2-bdd4-042d1d2e8474' },
+    }),
+  })
 );
 
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));

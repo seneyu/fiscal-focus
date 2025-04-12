@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Typography, Box } from '@mui/material';
 import * as d3 from 'd3';
 
-const ExpenseOverviewChart = ({ expenses, loading }) => {
+const ExpenseDetailsChart = ({ expenses, loading }) => {
   const d3Container = useRef(null);
 
   // load d3 visualization expenses object is retrieved
@@ -263,4 +263,4 @@ const ExpenseOverviewChart = ({ expenses, loading }) => {
   );
 };
 
-export default ExpenseOverviewChart;
+export default ExpenseDetailsChart;

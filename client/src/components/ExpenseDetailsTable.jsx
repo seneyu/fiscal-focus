@@ -15,7 +15,7 @@ import { getCategoryLabel, getPaymentMethodLabel } from '../utils/optionsData';
 import supabase from '../config/supabase';
 import EditForm from './editForm';
 
-const ExpenseOverviewTable = ({
+const ExpenseDetailsTable = ({
   expenses,
   loading: parentLoading,
   onExpenseDeleted,
@@ -194,4 +194,4 @@ const ExpenseOverviewTable = ({
   );
 };
 
-export default ExpenseOverviewTable;
+export default ExpenseDetailsTable;

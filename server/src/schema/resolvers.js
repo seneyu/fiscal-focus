@@ -45,6 +45,47 @@ const resolvers = {
         throw error;
       }
     },
+
+    getBudgets: async (_, __, { user }) => {
+      const { data } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('user_id', user.id);
+      return data;
+    },
+  },
+
+  Mutation: {
+    createBudget: async (_, args, { user }) => {
+      try {
+        const { category, monthly_limit, start_date } = args;
+
+        console.log('User ID:', user?.id);
+        console.log('Inserting:', args);
+
+        if (!user || !user.id) {
+          throw new Error(
+            'Authentication required. User not found in context.'
+          );
+        }
+
+        const { data, error } = await supabase
+          .from('budgets')
+          .insert([{ category, monthly_limit, start_date, user_id: user.id }])
+          .select('id, category, monthly_limit, start_date')
+          .single();
+
+        console.log('Supabase Response:', { data, error });
+
+        if (error) throw new Error(`Supabase error: ${error.message}`);
+        if (!data) throw new Error('No data returned from insertion.');
+
+        return data;
+      } catch (error) {
+        console.error('Budget creation error: ', error);
+        throw new Error(`Failed to create budget: ${error.message}`);
+      }
+    },
   },
 };
 

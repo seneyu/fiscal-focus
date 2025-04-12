@@ -23,7 +23,7 @@ import {
   tagOptions,
 } from '../utils/optionsData';
 
-const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
+const ExpenseDetailsForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -130,7 +130,7 @@ const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
     <Container>
       {/* <Typography variant="h3">Entry Form</Typography> */}
       <Typography variant="subtitle">
-        Pleasse fill out the details of your expense:
+        Please fill out the details of your expense:
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 6 }}>
@@ -280,4 +280,4 @@ const ExpenseOverviewForm = ({ onExpenseAdded, currencySymbol = '$' }) => {
   );
 };
 
-export default ExpenseOverviewForm;
+export default ExpenseDetailsForm;
