@@ -7,6 +7,7 @@ import { typeDefs } from './src/schema/typeDefs.js';
 import resolvers from './src/schema/resolvers.js';
 import cors from 'cors';
 import expenseController from './src/controllers/expenseController.js';
+import supabase from './src/config/supabase.js';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -68,9 +69,20 @@ app.use(
   }),
   express.json(),
   expressMiddleware(server, {
-    context: async () => ({
-      user: { id: 'b6eb8e7f-969f-46a2-bdd4-042d1d2e8474' },
-    }),
+    context: async ({ req }) => {
+      const authHeader = req.headers['authorization'] || '';
+      const token = authHeader.startsWith('Bearer ')
+        ? authHeader.slice(7)
+        : null;
+      let user = null;
+      if (token) {
+        const { data, error } = await supabase.auth.getUser(token);
+        if (data?.user && !error) {
+          user = data.user;
+        }
+      }
+      return { user };
+    },
   })
 );
 

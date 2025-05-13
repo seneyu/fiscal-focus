@@ -45,7 +45,7 @@ const CustomSummary = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // graphql query
+  // useLazyQuery only runs when manually triggered
   const [executeFilter, { loading: queryLoading, data }] = useLazyQuery(
     FILTER_EXPENSES,
     {
@@ -55,6 +55,8 @@ const CustomSummary = () => {
         setLoading(false);
         setSuccess(false);
       },
+      // tells apollo client to always fetch fresh data from server when query runs
+      // instead of checking cached data first
       fetchPolicy: 'network-only',
     }
   );

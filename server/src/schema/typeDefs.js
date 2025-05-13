@@ -2,7 +2,7 @@ export const typeDefs = `#graphql
     type Query {
       filterExpenses(category: String, payment_method: String, tags: [String]): [Expense!]!
       getBudgets: [Budget!]!
-      getBudgetProgress: [BudgetProgress!]!
+      getBudgetProgress(startDate: String, endDate: String): [BudgetProgress!]!
     }
   
     type Mutation {

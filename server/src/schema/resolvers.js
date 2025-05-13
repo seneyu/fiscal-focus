@@ -3,7 +3,10 @@ import supabase from '../config/supabase.js';
 // resolvers define how to fetch the types defined in schema
 const resolvers = {
   Query: {
-    filterExpenses: async (_, { category, payment_method, tags }) => {
+    filterExpenses: async (_, { category, payment_method, tags }, { user }) => {
+      if (!user || !user.id) {
+        throw new Error('Authentication required. User not found in context.');
+      }
       try {
         console.log('GraphQL Filter Request:', {
           category,
@@ -11,7 +14,10 @@ const resolvers = {
           tags,
         });
 
-        let query = supabase.from('expenses').select('*');
+        let query = supabase
+          .from('expenses')
+          .select('*')
+          .eq('user_id', user.id);
 
         if (category) {
           console.log(`Filtering by category: "${category}"`);
@@ -52,6 +58,55 @@ const resolvers = {
         .select('*')
         .eq('user_id', user.id);
       return data;
+    },
+
+    getBudgetProgress: async (_, __, { user }) => {
+      try {
+        // get all budgets for the user
+        const { data: budgets } = await supabase
+          .from('budgets')
+          .select('*')
+          .eq('user_id', user.id);
+
+        // get current month's expenses
+        const now = new Date();
+
+        const firstDay = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          1
+        ).toISOString();
+
+        const lastDay = new Date(
+          now.getFullYear(),
+          now.getMonth() + 1,
+          0
+        ).toISOString();
+
+        const { data: expenses } = await supabase
+          .from('expenses')
+          .select('*')
+          .eq('user_id', user.id)
+          .gte('date', firstDay)
+          .lte('date', lastDay);
+
+        // calculate progress
+        return budgets.map((budget) => {
+          const categoryExpenses = expenses
+            .filter((exp) => exp.category === budget.category)
+            .reduce((sum, exp) => sum + exp.amount, 0);
+
+          return {
+            category: budget.category,
+            monthly_limit: budget.monthly_limit,
+            current_spending: categoryExpenses,
+            remaining: budget.monthly_limit - categoryExpenses,
+          };
+        });
+      } catch (error) {
+        console.error('Budget process error: ', error);
+        throw new Error('Failed to calculate budget progress');
+      }
     },
   },
 

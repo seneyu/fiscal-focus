@@ -24,3 +24,14 @@ export const FILTER_EXPENSES = gql`
     }
   }
 `;
+
+export const GET_BUDGET_PROGRESS = gql`
+  query GetBudgetProgress {
+    getBudgetProgress {
+      category
+      monthly_limit
+      current_spending
+      remaining
+    }
+  }
+`;
