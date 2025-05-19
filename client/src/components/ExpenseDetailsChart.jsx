@@ -2,7 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { Typography, Box, Card } from '@mui/material';
 import * as d3 from 'd3';
 
-const ExpenseDetailsChart = ({ date, expenses, loading }) => {
+const ExpenseDetailsChart = ({
+  date,
+  expenses,
+  loading,
+  showLegend = true,
+}) => {
   const d3Container = useRef(null);
 
   // load d3 visualization expenses object is retrieved
@@ -66,9 +71,48 @@ const ExpenseDetailsChart = ({ date, expenses, loading }) => {
         .append('g')
         .attr('transform', `translate(${width / 4}, ${height / 2})`);
 
-      const legendGroup = svg
-        .append('g')
-        .attr('transform', `translate(${width * 0.55}, ${height / 2 - 120})`);
+      // only show legend when requested
+      if (showLegend) {
+        const legendGroup = svg
+          .append('g')
+          .attr('transform', `translate(${width * 0.55}, ${height / 2 - 120})`);
+
+        // add legend
+        const legendRectSize = 10;
+        const legendSpacing = 24;
+
+        const legendItemsPerColumn = 8;
+        const legend = legendGroup
+          .selectAll('.legend')
+          .data(pieData)
+          .enter()
+          .append('g')
+          .attr('class', 'legend')
+          .attr('transform', (d, i) => {
+            const column = Math.floor(i / legendItemsPerColumn);
+            const row = i % legendItemsPerColumn;
+            return `translate(${column * 150}, ${row * legendSpacing})`;
+          });
+
+        legend
+          .append('rect')
+          .attr('width', legendRectSize)
+          .attr('height', legendRectSize)
+          .attr('fill', (d) => color(d.data.category))
+          .style('stroke', (d) => color(d.data.category));
+
+        legend
+          .append('text')
+          .attr('x', legendRectSize + 5)
+          .attr('y', legendRectSize - 3)
+          .text((d) => {
+            let category =
+              d.data.category[0].toUpperCase() +
+              d.data.category.slice(1, d.data.category.length);
+            return `${category} (${d.percentage.toFixed(1)}%)`;
+          })
+          .style('font-size', '0.7rem');
+      }
 
       const arc = d3
         .arc()
@@ -112,42 +156,6 @@ const ExpenseDetailsChart = ({ date, expenses, loading }) => {
         .style('fill', 'black')
         .text('Total');
 
-      // add legend
-      const legendRectSize = 10;
-      const legendSpacing = 24;
-
-      const legendItemsPerColumn = 8;
-      const legend = legendGroup
-        .selectAll('.legend')
-        .data(pieData)
-        .enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', (d, i) => {
-          const column = Math.floor(i / legendItemsPerColumn);
-          const row = i % legendItemsPerColumn;
-          return `translate(${column * 150}, ${row * legendSpacing})`;
-        });
-
-      legend
-        .append('rect')
-        .attr('width', legendRectSize)
-        .attr('height', legendRectSize)
-        .attr('fill', (d) => color(d.data.category))
-        .style('stroke', (d) => color(d.data.category));
-
-      legend
-        .append('text')
-        .attr('x', legendRectSize + 5)
-        .attr('y', legendRectSize - 3)
-        .text((d) => {
-          let category =
-            d.data.category[0].toUpperCase() +
-            d.data.category.slice(1, d.data.category.length);
-          return `${category} (${d.percentage.toFixed(1)}%)`;
-        })
-        .style('font-size', '0.8rem');
-
       // define tooltip
       const tooltip = d3
         .select(d3Container.current)
@@ -183,7 +191,7 @@ const ExpenseDetailsChart = ({ date, expenses, loading }) => {
           tooltip.style('visibility', 'hidden');
         });
     }
-  }, [expenses, loading]);
+  }, [expenses, loading, showLegend]);
 
   if (loading) {
     return <Typography>Loading expenses...</Typography>;
@@ -194,8 +202,8 @@ const ExpenseDetailsChart = ({ date, expenses, loading }) => {
   }
 
   return (
-    <Box>
-      <Card sx={{ padding: '2rem' }}>
+    <Box sx={{ width: '100%' }}>
+      <Card sx={{ width: '100%', padding: '2rem' }}>
         <Typography sx={{ typography: 'subtitle2' }}>
           SPENDING BY CATEGORY
         </Typography>
@@ -207,7 +215,9 @@ const ExpenseDetailsChart = ({ date, expenses, loading }) => {
             No expense data available. Add some expenses to see your chart.
           </Typography>
         ) : (
-          <div ref={d3Container} />
+          <div style={{ width: '100%', height: 'auto', minHeight: 400 }}>
+            <div ref={d3Container} style={{ width: '100%' }} />
+          </div>
         )}
       </Card>
     </Box>

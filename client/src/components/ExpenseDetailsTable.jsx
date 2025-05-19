@@ -99,12 +99,11 @@ const ExpenseDetailsTable = ({
   };
 
   return (
-    <TableContainer component={Paper} sx={{ mt: -5 }}>
-      {/* {console.log(expenses)} */}
+    <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="expenses table">
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
+            <TableCell sx={{ pl: '2rem' }}>Date</TableCell>
             <TableCell>Category</TableCell>
             <TableCell>Title</TableCell>
             <TableCell>Amount</TableCell>
@@ -134,7 +133,7 @@ const ExpenseDetailsTable = ({
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
                 }}>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" sx={{ pl: '2rem' }}>
                   {row.date}
                 </TableCell>
                 <TableCell>{getCategoryLabel(row.category)}</TableCell>

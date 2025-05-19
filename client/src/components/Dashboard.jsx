@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
-import { Container, Box, Tabs, Tab } from '@mui/material';
+import {
+  Container,
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  IconButton,
+  Slide,
+  Paper,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import CashFlow from './CashFlow';
 import ExpenseDetailsForm from './ExpenseDetailsForm';
 import ExpenseDetailsChart from './ExpenseDetailsChart';
 import ExpenseDetailsTable from './ExpenseDetailsTable';
 import CustomSummary from './CustomSummary';
-import CashFlow from './CashFlow';
 
 const CustomTabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -38,6 +49,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [date, setDate] = useState('');
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+
+  const toggleExpenseForm = () => {
+    setShowExpenseForm(!showExpenseForm);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -167,19 +183,72 @@ const Dashboard = () => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <CashFlow date={date} />
+          <CashFlow date={date} expenses={expenses} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <Container>
-            {/* <Box sx={{ display: 'inline-flex', alignitems: 'center' }}> */}
-            <Box>
-              {/* <ExpenseDetailsForm onExpenseAdded={addNewExpense} /> */}
-              <ExpenseDetailsChart
-                date={date}
-                expenses={expenses}
-                loading={loading}
-              />
+            <Box sx={{ position: 'relative', minHeight: '400px', mb: 4 }}>
+              {/* expense chart with toggle button */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  mb: 2,
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  zIndex: 20,
+                }}>
+                <IconButton
+                  onClick={toggleExpenseForm}
+                  color="primary"
+                  sx={{
+                    bgcolor: showExpenseForm ? 'error.light' : 'primary.light',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      bgcolor: showExpenseForm ? 'error.main' : 'primary.main',
+                    },
+                  }}>
+                  {showExpenseForm ? <CloseIcon /> : <AddIcon />}
+                </IconButton>
+              </Box>
+
+              {/* expense form slide */}
+              <Slide
+                direction="left"
+                in={showExpenseForm}
+                mountOnEnter
+                unmountOnExit>
+                <Paper
+                  sx={{
+                    position: 'absolute',
+                    right: 50,
+                    top: 0,
+                    width: '45%',
+                    height: '100%',
+                    p: 3,
+                    zIndex: 10,
+                    borderRadius: '8px',
+                    overflowY: 'auto',
+                  }}>
+                  <ExpenseDetailsForm
+                    onExpenseAdded={(expense) => {
+                      addNewExpense(expense);
+                    }}
+                  />
+                </Paper>
+              </Slide>
+
+              <Box>
+                <ExpenseDetailsChart
+                  date={date}
+                  expenses={expenses}
+                  loading={loading}
+                  showLegend={!showExpenseForm}
+                />
+              </Box>
             </Box>
+
             <ExpenseDetailsTable
               expenses={expenses}
               loading={loading}
